@@ -10,18 +10,29 @@ if (!isset($_SESSION['captcha_register'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login/Signup Form</title>
     <link rel="stylesheet" href="SignUp_LogIn_Form.css">
     <link rel="stylesheet" href="css/login.css">
+
     <style>
-        .form-box.register { display: none; }
-        .container.active .form-box.login { display: none; }
-        .container.active .form-box.register { display: block; }
+        .form-box.register {
+            display: none;
+        }
+
+        .container.active .form-box.login {
+            display: none;
+        }
+
+        .container.active .form-box.register {
+            display: block;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Form Dang Nhap -->
@@ -41,13 +52,11 @@ if (!isset($_SESSION['captcha_register'])) {
                 <div class="input-box">
                     <input type="password" name="password" placeholder="Password" required>
                 </div>
-                <div class="input-box">
-                    <img id="captcha_img" src="captcha.php?type=login" alt="CAPTCHA">
-                    <button type="button" onclick="document.getElementById('captcha_img').src='captcha.php?type=login&refresh=1&'+Math.random()">Làm mới mã</button>
+                <div class="d-flex justify-content-center">
+                    <div class="g-recaptcha " data-sitekey="6LdC0HQhAAAAADvueQtRcbljK0hkwhjWwS2K3P7J"></div>
+
                 </div>
-                <div class="input-box">
-                    <input type="text" name="captcha" placeholder="Nhập mã CAPTCHA" required>
-                </div>
+
                 <button type="submit" class="btn">Đăng Nhập</button>
             </form>
         </div>
@@ -66,13 +75,8 @@ if (!isset($_SESSION['captcha_register'])) {
                 <div class="input-box">
                     <input type="password" name="password" placeholder="Password" required>
                 </div>
-                <div class="input-box">
-                    <img id="captcha_img2" src="captcha.php?type=register" alt="CAPTCHA">
-                    <button type="button" onclick="document.getElementById('captcha_img2').src='captcha.php?type=register&refresh=1&'+Math.random()">Làm mới mã</button>
-                </div>
-                <div class="input-box">
-                    <input type="text" name="captcha" placeholder="Nhập mã CAPTCHA" required>
-                </div>
+                <div class="g-recaptcha " data-sitekey="6LdC0HQhAAAAADvueQtRcbljK0hkwhjWwS2K3P7J"></div>
+
                 <button type="submit" class="btn">Đăng Ký</button>
             </form>
         </div>
@@ -91,7 +95,7 @@ if (!isset($_SESSION['captcha_register'])) {
             </div>
         </div>
     </div>
-
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script>
         const container = document.querySelector('.container');
         const loginBtn = document.querySelector('.login-btn');
@@ -106,4 +110,5 @@ if (!isset($_SESSION['captcha_register'])) {
         });
     </script>
 </body>
+
 </html>

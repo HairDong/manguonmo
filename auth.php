@@ -6,20 +6,26 @@ $action = $_POST['action'] ?? '';
 $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
 $email = trim($_POST['email'] ?? '');
-$captcha_input = $_POST['captcha'] ?? '';
 
-// Xác định session key dựa trên hành động
-$session_key = $action === 'register' ? 'captcha_register' : 'captcha_login';
+// ===== THÊM PHẦN XÁC MINH reCAPTCHA =====
+$recaptchaResponse = $_POST['g-recaptcha-response'] ?? '';
+$recaptchaSecret = '6LdC0HQhAAAAAKsDHvu7HGNJFXvqbTiz5fKBpEUk'; // ← Thay bằng mã bí mật của bạn
 
-// Kiểm tra CAPTCHA
-if (!isset($_SESSION[$session_key]) || $captcha_input !== (string)$_SESSION[$session_key]) {
-    $_SESSION['error'] = "Sai mã CAPTCHA.";
-    unset($_SESSION[$session_key]); // Xóa CAPTCHA để tạo mới khi tải lại
+if (!$recaptchaResponse) {
+    $_SESSION['error'] = "Vui lòng xác minh bạn không phải người máy.";
     header("Location: login.php");
     exit;
 }
-// Xóa CAPTCHA sau khi kiểm tra thành công
-unset($_SESSION[$session_key]);
+
+$verify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$recaptchaSecret&response=$recaptchaResponse&remoteip=" . $_SERVER['REMOTE_ADDR']);
+$captchaSuccess = json_decode($verify);
+
+if (!$captchaSuccess->success) {
+    $_SESSION['error'] = "Xác minh reCAPTCHA thất bại.";
+    header("Location: login.php");
+    exit;
+}
+// ===== KẾT THÚC PHẦN reCAPTCHA =====
 
 if ($action === 'login') {
     if (!$username || !$password) {
@@ -34,7 +40,7 @@ if ($action === 'login') {
 
     if ($user && $password === $user['password']) {
         $_SESSION['user'] = $user['username'];
-        $_SESSION['role'] = $user['role']; // Gán role từ bảng users
+        $_SESSION['role'] = $user['role'];
         header("Location: index.php");
         exit;
     } else {
@@ -59,7 +65,6 @@ if ($action === 'login') {
         exit;
     }
 
-    // Lưu mật khẩu không mã hóa như bạn yêu cầu
     $stmt = $conn->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'user')");
     $stmt->execute([$username, $email, $password]);
 
